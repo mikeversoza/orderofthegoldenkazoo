@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blackout in the Dehn Bar</title>
+<title>Bar Bingo</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -38,14 +38,11 @@
     pointer-events: none;
   }
 
-  header {
-    text-align: center;
-    margin-bottom: 32px;
-  }
+  header { text-align: center; margin-bottom: 32px; }
 
   .logo {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(72px, 14vw, 130px);
+    font-size: clamp(52px, 10vw, 96px);
     letter-spacing: 0.04em;
     line-height: 0.85;
     color: var(--ink);
@@ -54,18 +51,22 @@
 
   .logo span { color: var(--accent); }
 
-  .logo::after {
-    content: 'BLACKOUT AT THE DEHN BAR';
-    display: block;
+  .subtitle {
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.3em;
+    font-size: clamp(20px, 3.5vw, 30px);
+    letter-spacing: 0.35em;
     color: var(--stamp);
     font-weight: 500;
-    margin-top: 6px;
+    margin-top: 8px;
+    display: block;
   }
 
-  /* ── CARD ── */
+  .g-red {
+    color: var(--accent);
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+  }
+
   .bingo-card {
     background: white;
     border: 3px solid var(--ink);
@@ -156,7 +157,6 @@
 
   .cell-text { pointer-events: none; }
 
-  /* ── ACTIONS ── */
   .card-actions {
     display: flex;
     gap: 12px;
@@ -178,32 +178,11 @@
     transition: all 0.1s;
   }
 
-  .btn-action:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 var(--ink);
-  }
+  .btn-action:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn-action:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn-action.new-card { background: var(--accent); color: white; }
+  .btn-action.print { background: var(--accent2); color: white; }
 
-  .btn-action:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--ink);
-  }
-
-  .btn-action.new-card {
-    background: var(--accent);
-    color: white;
-  }
-
-  .btn-action.clear {
-    background: white;
-    color: var(--ink);
-  }
-
-  .btn-action.print {
-    background: var(--accent2);
-    color: white;
-  }
-
-  /* ── PRINT ── */
   @media print {
     body { background: white; padding: 0; }
     body::before { display: none; }
@@ -211,37 +190,122 @@
     .bingo-card { box-shadow: none; border: 2px solid black; max-width: 100%; }
     .bingo-cell.marked::after { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
+
+  /* ── CONGRATS MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,14,13,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 48px 40px 40px;
+    text-align: center;
+    max-width: 420px;
+    width: 90%;
+    transform: scale(0.85) translateY(20px);
+    transition: transform 0.3s ease;
+    position: relative;
+  }
+
+  .modal-overlay.show .modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 12vw, 80px);
+    letter-spacing: 0.05em;
+    line-height: 0.9;
+    color: var(--ink);
+  }
+
+  .modal-title span { color: var(--accent); }
+
+  .modal-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stamp);
+    margin-top: 12px;
+    margin-bottom: 32px;
+  }
+
+  .confetti-row {
+    font-size: 28px;
+    margin-bottom: 24px;
+    letter-spacing: 4px;
+  }
+
+  .btn-modal {
+    padding: 14px 32px;
+    background: var(--accent);
+    color: white;
+    border: 2px solid var(--ink);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: all 0.1s;
+    margin: 4px;
+  }
+
+  .btn-modal:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); }
+  .btn-modal:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--ink); }
+
+  .btn-modal.secondary {
+    background: white;
+    color: var(--ink);
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">BIN<span>G</span>O</div>
+  <div class="logo">Blackout at the Dehn</div>
+  <div class="subtitle">BIN<span class="g-red">g</span>O</div>
 </header>
 
 <div class="bingo-card" id="bingoCard"></div>
 
 <div class="card-actions">
   <button class="btn-action new-card" onclick="newCard()">NEW CARD</button>
-  <button class="btn-action clear" onclick="clearMarks()">CLEAR MARKS</button>
+  <button class="btn-action" onclick="clearMarks()">CLEAR MARKS</button>
   <button class="btn-action print" onclick="window.print()">PRINT</button>
 </div>
 
 <script>
 const ITEMS = [
-  "Riegna throws an ashtray",
+  "Regina throws an ashtray",
   "Scottie bites their date before the date bites her",
   "Someone falls off a barstool",
   "Pure Decadence brings 1 box instead of 2",
-  "Riegna gets in a fight",
+  "Regina gets in a fight",
   "Someone ugly crying",
   "Someone throws up",
   "A non family member at family table",
   "Hash plays Marty Robbins or Tom Waits",
   "Komo drinks a nutty russian for first shift drink",
   "Having to call the cops",
-  "Someone smokes weed on the patio not knowing it's not allowed",
-  "Riegna says she wants to leave before cooking anything",
+  "Someone smokes weed on the patio not knowing its not allowed",
+  "Regina says she wants to leave before cooking anything",
   "Regular here on a non regular day",
   "Mel has more than one drink",
   "Regular comes back to the bar for a second time after leaving",
@@ -258,21 +322,21 @@ const ITEMS = [
   "Lunch shots",
   "Someone is on a first date",
   "Someone is on an e-date (Tinder, Bumble, etc.)",
-  "Asked for a device and it's on the communal charging block",
+  "Asked for a device and its on the communal charging block",
   "Someone asks Sasha about her weird colored drink",
   "Someone says they have to go move their car or pay for parking",
   "At least 3 dogs in the bar at one time",
   "Someone accidentally breaks a glass and tries to clean it up",
-  "Nonregular finds notes in the owl's ass",
+  "Nonregular finds notes in the owls ass",
   "All three picnic tables filled at one time",
   "Heidi not wearing pastel",
   "Gabs not wearing any red",
-  "Someone orders a tito's and vodka",
+  "Someone orders a titos and vodka",
   "Someone starts talking politics or religion",
   "Scottie comes in wearing no leather",
-  "Someone asks Scottie how they are and doesn't get all ten fingers all ten toes",
+  "Someone asks Scottie how they are and doesnt get all ten fingers all ten toes",
   "A regular drags a chair and people cringe",
-  "Asks for a cig then asks if it's a menthol",
+  "Asks for a cig then asks if its a menthol",
   "Christie comes in",
   "All Star plays naturally",
   "Someone asks if we are streaming a paid event",
@@ -282,7 +346,7 @@ const ITEMS = [
   "Michelle stays more than an hour after her shift",
   "Jon talks about time in prison",
   "Someone mentions the previous Dehn iteration",
-  "A bar mentioned that doesn't exist in Salem anymore",
+  "A bar mentioned that doesnt exist in Salem anymore",
   "Watering the plants gets mentioned",
   "A bartender called out for leaving with something important",
   "Curtis swears off Abby again",
@@ -293,9 +357,9 @@ const ITEMS = [
   "Having to unhook the chairs around the fire",
   "Comical amount of skiing supplies on the floor",
   "Someone asks if we have pool",
-  "Fire isn't lit 2 hours past sunset",
+  "Fire isnt lit 2 hours past sunset",
   "Shane and Laura show up at the same time",
-  "You hear someone say you've never seen X movie",
+  "You hear someone say youve never seen X movie",
   "Non-employee asks to go in the office",
   "A person asks for the music to be turned up",
   "Big Bang Theory, Ridiculousness or sports on the office TV",
@@ -318,17 +382,17 @@ const ITEMS = [
   "A person tries to park their bike awkwardly on the patio",
   "2 or more chairs moved by one party",
   "Two people trade clothes or accessories",
-  "Getting a jello shot from someone you don't know",
+  "Getting a jello shot from someone you dont know",
   "Devon has phone service",
   "3 or more people woo at one time",
   "Someone plays a song to annoy someone else",
-  "You can't sit here, a regular is coming back",
-  "Bartender forgets about someone's food order",
+  "You cant sit here, a regular is coming back",
+  "Bartender forgets about someones food order",
   "You find something weird in the fire pit",
   "Holman guests come in for one drink and leave right away",
   "A regular brings leftovers from their job",
   "Ariel is not playing a game",
-  "Dev doesn't have his tech deck with him"
+  "Dev doesnt have his tech deck with him"
 ];
 
 function shuffle(arr) {
@@ -345,29 +409,45 @@ function escHtml(str) {
 }
 
 function newCard() {
-  const items = shuffle(ITEMS).slice(0, 24); // 24 + 1 free = 25
+  const items = shuffle(ITEMS).slice(0, 24);
   const letters = ['B','I','N','G','O'];
-  const center = 12; // index 12 = middle of 5x5
+  const card = document.getElementById('bingoCard');
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = '';
 
   let cells = [];
   let idx = 0;
   for (let i = 0; i < 25; i++) {
-    cells.push(i === center ? { free: true } : { text: items[idx++] });
+    cells.push(i === 12 ? { free: true } : { text: items[idx++] });
   }
 
-  const card = document.getElementById('bingoCard');
-  card.style.animation = 'none';
-  card.offsetHeight; // reflow to restart animation
-  card.style.animation = '';
-
   card.innerHTML =
-    `<div class="card-header">${letters.map(l => `<div class="letter">${l}</div>`).join('')}</div>` +
-    `<div class="card-grid">` +
+    '<div class="card-header">' + letters.map(l => '<div class="letter">'+l+'</div>').join('') + '</div>' +
+    '<div class="card-grid">' +
     cells.map(cell => cell.free
-      ? `<div class="bingo-cell free-space"><span class="cell-text">FREE</span></div>`
-      : `<div class="bingo-cell" onclick="this.classList.toggle('marked')"><span class="cell-text">${escHtml(cell.text)}</span></div>`
+      ? '<div class="bingo-cell free-space"><span class="cell-text">FREE</span></div>'
+      : '<div class="bingo-cell" onclick="toggleMark(this)"><span class="cell-text">'+escHtml(cell.text)+'</span></div>'
     ).join('') +
-    `</div>`;
+    '</div>';
+}
+
+
+function toggleMark(el) {
+  el.classList.toggle('marked');
+  checkBlackout();
+}
+
+function checkBlackout() {
+  const cells = document.querySelectorAll('.bingo-cell:not(.free-space)');
+  const allMarked = [...cells].every(c => c.classList.contains('marked'));
+  if (allMarked) {
+    setTimeout(() => document.getElementById('modalOverlay').classList.add('show'), 300);
+  }
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
 }
 
 function clearMarks() {
@@ -376,5 +456,17 @@ function clearMarks() {
 
 newCard();
 </script>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="confetti-row">🍺 🎉 🍺</div>
+    <div class="modal-title">BLACK<span>OUT</span></div>
+    <div class="modal-sub">Every square filled — you win the night</div>
+    <div>
+      <button class="btn-modal secondary" onclick="closeModal()">KEEP PLAYING</button>
+      <button class="btn-modal" onclick="closeModal(); newCard()">NEW CARD</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
