@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bar Bingo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0d;
+    --paper: #f5f0e8;
+    --accent: #e8400c;
+    --accent2: #1a6b3a;
+    --stamp: #c8b89a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px 48px;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(0,0,0,0.04) 28px),
+      repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(0,0,0,0.04) 28px);
+    pointer-events: none;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 14vw, 130px);
+    letter-spacing: 0.04em;
+    line-height: 0.85;
+    color: var(--ink);
+    display: inline-block;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .logo::after {
+    content: 'BAR EDITION';
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--stamp);
+    font-weight: 500;
+    margin-top: 6px;
+  }
+
+  /* ── CARD ── */
+  .bingo-card {
+    background: white;
+    border: 3px solid var(--ink);
+    box-shadow: 7px 7px 0 var(--ink);
+    overflow: hidden;
+    width: 100%;
+    max-width: 680px;
+    animation: appear 0.35s ease;
+  }
+
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(14px) scale(0.97); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .card-header {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: var(--ink);
+  }
+
+  .card-header .letter {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(30px, 6vw, 52px);
+    text-align: center;
+    padding: 10px 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .card-header .letter:nth-child(1) { color: #fff; }
+  .card-header .letter:nth-child(2) { color: #ffd166; }
+  .card-header .letter:nth-child(3) { color: #a8dadc; }
+  .card-header .letter:nth-child(4) { color: #c77dff; }
+  .card-header .letter:nth-child(5) { color: #ff6b6b; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .bingo-cell {
+    border: 1.5px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8px 6px;
+    font-size: clamp(8px, 1.1vw, 12px);
+    font-family: 'DM Mono', monospace;
+    min-height: 72px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s;
+    line-height: 1.3;
+    word-break: break-word;
+    user-select: none;
+  }
+
+  .bingo-cell:hover { background: var(--paper); }
+
+  .bingo-cell.free-space {
+    background: var(--ink);
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(14px, 2.2vw, 22px);
+    letter-spacing: 0.08em;
+    cursor: default;
+  }
+
+  .bingo-cell.free-space:hover { background: var(--ink); }
+
+  .bingo-cell.marked::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    background: var(--accent);
+    opacity: 0.88;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .bingo-cell.marked .cell-text {
+    position: relative;
+    z-index: 1;
+    color: white;
+    font-weight: 500;
+  }
+
+  .cell-text { pointer-events: none; }
+
+  /* ── ACTIONS ── */
+  .card-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 680px;
+  }
+
+  .btn-action {
+    flex: 1;
+    padding: 14px;
+    border: 2px solid var(--ink);
+    background: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--ink);
+    transition: all 0.1s;
+  }
+
+  .btn-action:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  .btn-action:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+
+  .btn-action.new-card {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-action.clear {
+    background: white;
+    color: var(--ink);
+  }
+
+  .btn-action.print {
+    background: var(--accent2);
+    color: white;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: white; padding: 0; }
+    body::before { display: none; }
+    .card-actions { display: none !important; }
+    .bingo-card { box-shadow: none; border: 2px solid black; max-width: 100%; }
+    .bingo-cell.marked::after { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">BIN<span>G</span>O</div>
+</header>
+
+<div class="bingo-card" id="bingoCard"></div>
+
+<div class="card-actions">
+  <button class="btn-action new-card" onclick="newCard()">NEW CARD</button>
+  <button class="btn-action clear" onclick="clearMarks()">CLEAR MARKS</button>
+  <button class="btn-action print" onclick="window.print()">PRINT</button>
+</div>
+
+<script>
+const ITEMS = [
+  "Regina throws an ashtray",
+  "Scottie bites their date before the date bites her",
+  "Someone falls off a barstool",
+  "Pure Decadence brings 1 box instead of 2",
+  "Regina gets in a fight",
+  "Someone ugly crying",
+  "Someone throws up",
+  "A non family member at family table",
+  "Hash plays Marty Robbins or Tom Waits",
+  "Komo drinks a nutty russian for first shift drink",
+  "Having to call the cops",
+  "Someone smokes weed on the patio not knowing it's not allowed",
+  "Regina says she wants to leave before cooking anything",
+  "Regular here on a non regular day",
+  "Mel has more than one drink",
+  "Regular comes back to the bar for a second time after leaving",
+  "Trash panda digs through garbage for a cigarette butt",
+  "Nonregular thinks they have more pull than they do",
+  "A non accidental glass break",
+  "A regular gets cut off noticeably",
+  "Plugged toilet plunged by a non employee",
+  "Bartender gives a free drink for doing a task",
+  "Unintentional buttcrack 3+ inches with visible cheek",
+  "Someone plays instrument on patio when not everyone is digging it",
+  "Someone sits in a wet chair",
+  "Someone bums more than 3 cigs with no money",
+  "Lunch shots",
+  "Someone is on a first date",
+  "Someone is on an e-date (Tinder, Bumble, etc.)",
+  "Asked for a device and it's on the communal charging block",
+  "Someone asks Sasha about her weird colored drink",
+  "Someone says they have to go move their car or pay for parking",
+  "At least 3 dogs in the bar at one time",
+  "Someone accidentally breaks a glass and tries to clean it up",
+  "Nonregular finds notes in the owl's ass",
+  "All three picnic tables filled at one time",
+  "Heidi not wearing pastel",
+  "Gabs not wearing any red",
+  "Someone orders a tito's and vodka",
+  "Someone starts talking politics or religion",
+  "Scottie comes in wearing no leather",
+  "Someone asks Scottie how they are and doesn't get all ten fingers all ten toes",
+  "A regular drags a chair and people cringe",
+  "Asks for a cig then asks if it's a menthol",
+  "Christie comes in",
+  "All Star plays naturally",
+  "Someone asks if we are streaming a paid event",
+  "Someone complains about how the draft beer tastes",
+  "An expensive item is left on the table by its owner",
+  "An audience participation song comes on",
+  "Michelle stays more than an hour after her shift",
+  "Jon talks about time in prison",
+  "Someone mentions the previous Dehn iteration",
+  "A bar mentioned that doesn't exist in Salem anymore",
+  "Watering the plants gets mentioned",
+  "A bartender called out for leaving with something important",
+  "Curtis swears off Abby again",
+  "Animal left in a car by someone inside the bar",
+  "Rando tries to park in the bartender spot",
+  "Animal transported not on a normal leash",
+  "5 or more people come in wearing formal wear",
+  "Having to unhook the chairs around the fire",
+  "Comical amount of skiing supplies on the floor",
+  "Someone asks if we have pool",
+  "Fire isn't lit 2 hours past sunset",
+  "Shane and Laura show up at the same time",
+  "You hear someone say you've never seen X movie",
+  "Non-employee asks to go in the office",
+  "A person asks for the music to be turned up",
+  "Big Bang Theory, Ridiculousness or sports on the office TV",
+  "More than three pigeons on the back patio",
+  "An entire purse or backpack emptied on a table",
+  "William Tipton shows up",
+  "Unknown birthday announced by birthday person",
+  "Someone orders bar food when Regina is working",
+  "Obligatory partner shot",
+  "Scottie shows her rib tattoo",
+  "Someone melts their shoe on one of the fires",
+  "Someone says be fun have safe",
+  "3 or more people go for party favors",
+  "Wingman shows up and hands out a business card",
+  "Someone asks to use or share Touchtunes credits",
+  "3 or more people leaving to do karaoke",
+  "When Leah laughs and snorts",
+  "When someone sits in chair graveyard",
+  "When a bartender asks someone to go get them food",
+  "A person tries to park their bike awkwardly on the patio",
+  "2 or more chairs moved by one party",
+  "Two people trade clothes or accessories",
+  "Getting a jello shot from someone you don't know",
+  "Devon has phone service",
+  "3 or more people woo at one time",
+  "Someone plays a song to annoy someone else",
+  "You can't sit here, a regular is coming back",
+  "Bartender forgets about someone's food order",
+  "You find something weird in the fire pit",
+  "Holman guests come in for one drink and leave right away",
+  "A regular brings leftovers from their job",
+  "Ariel is not playing a game",
+  "Dev doesn't have his tech deck with him"
+];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function newCard() {
+  const items = shuffle(ITEMS).slice(0, 24); // 24 + 1 free = 25
+  const letters = ['B','I','N','G','O'];
+  const center = 12; // index 12 = middle of 5x5
+
+  let cells = [];
+  let idx = 0;
+  for (let i = 0; i < 25; i++) {
+    cells.push(i === center ? { free: true } : { text: items[idx++] });
+  }
+
+  const card = document.getElementById('bingoCard');
+  card.style.animation = 'none';
+  card.offsetHeight; // reflow to restart animation
+  card.style.animation = '';
+
+  card.innerHTML =
+    `<div class="card-header">${letters.map(l => `<div class="letter">${l}</div>`).join('')}</div>` +
+    `<div class="card-grid">` +
+    cells.map(cell => cell.free
+      ? `<div class="bingo-cell free-space"><span class="cell-text">FREE</span></div>`
+      : `<div class="bingo-cell" onclick="this.classList.toggle('marked')"><span class="cell-text">${escHtml(cell.text)}</span></div>`
+    ).join('') +
+    `</div>`;
+}
+
+function clearMarks() {
+  document.querySelectorAll('.bingo-cell.marked').forEach(c => c.classList.remove('marked'));
+}
+
+newCard();
+</script>
+</body>
+</html>
