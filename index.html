@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blackout at the Dehn Bar</title>
+<title>Bar Bingo</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -42,7 +42,7 @@
 
   .logo {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(52px, 10vw, 91px);
+    font-size: clamp(38px, 7.5vw, 72px);
     letter-spacing: 0.04em;
     line-height: 0.85;
     color: var(--ink);
@@ -274,9 +274,9 @@
     background: white;
     color: var(--ink);
   }
-/* Footer */
+
   footer {
-    margin-top: 40px;
+    margin-top: 32px;
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.15em;
@@ -290,7 +290,8 @@
     text-decoration: none;
     transition: color 0.15s;
   }
-footer a:hover { color: var(--accent); }
+
+  footer a:hover { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -366,8 +367,6 @@ const ITEMS = [
   "A bar mentioned that doesnt exist in Salem anymore",
   "Watering the plants gets mentioned",
   "A bartender called out for leaving with something important",
-  "Someone asks, are you playing bingo?",
-  "Curtis swears off Abby again",
   "Animal left in a car by someone inside the bar",
   "Rando tries to park in the bartender spot",
   "Animal transported not on a normal leash",
@@ -385,7 +384,7 @@ const ITEMS = [
   "An entire purse or backpack emptied on a table",
   "William Tipton shows up",
   "Unknown birthday announced by birthday person",
-  "Someone orders bar food when Regina is working",
+  "Someone orders bar food when Riegna is working",
   "Obligatory partner shot",
   "Scottie shows her rib tattoo",
   "Someone melts their shoe on one of the fires",
@@ -409,12 +408,6 @@ const ITEMS = [
   "You find something weird in the fire pit",
   "Holman guests come in for one drink and leave right away",
   "A regular brings leftovers from their job",
-  "Someone says Sup' bitches?",
-  "Someone says Later bitches!",
-  "Buddy the wiener shows up!",
-  "A person comes out the back and is surprised about the patio",
-  "Someone asks, What's on the menu?",
-  "A person can't find the bathroom",
   "Ariel is not playing a game",
   "Dev doesnt have his tech deck with him"
 ];
@@ -432,7 +425,15 @@ function escHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+window.addEventListener('beforeunload', function(e) {
+  if (window._cardDirty) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
 function newCard() {
+  window._cardDirty = false;
   const items = shuffle(ITEMS).slice(0, 24);
   const letters = ['B','I','N','G','O'];
   const card = document.getElementById('bingoCard');
@@ -459,6 +460,7 @@ function newCard() {
 
 function toggleMark(el) {
   el.classList.toggle('marked');
+  window._cardDirty = true;
   checkBlackout();
 }
 
@@ -492,8 +494,9 @@ newCard();
     </div>
   </div>
 </div>
-</body>
+
 <footer>
   Game designed by GrapeBiscuits &nbsp;<a href="secret.html">&copy;</a> 2026
 </footer>
+</body>
 </html>
