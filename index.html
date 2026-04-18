@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blackout at the Dehn Bar</title>
+<title>Bar Bingo</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -310,110 +310,161 @@
 </div>
 
 <script>
-const ITEMS = [
+// Each entry: [text, weight] — weight 1=rare, 2=occasional, 3=common
+// ── SQUARE TIERS ──────────────────────────────────────────────────────────────
+// Adjust TIER_PCT to control how many of the 24 squares come from each tier.
+// Values must add up to 1.0. Card always has 24 squares + 1 FREE center.
+const TIER_PCT = {
+  rare:     0.17,  // ~4  squares  — legendary moments
+  occasional: 0.33, // ~8  squares  — happens sometimes
+  common:   0.50,  // ~12 squares  — everyday bar life
+};
+
+// ── TIER 1 — RARE (legendary, almost never happens) ───────────────────────────
+const RARE = [
   "Riegna throws an ashtray",
   "Scottie bites their date before the date bites her",
-  "Someone falls off a barstool",
-  "Riegna gets in a fight",
-  "Someone ugly crying",
-  "Someone throws up",
-  "A non family member at family table",
-  "Hash plays Marty Robbins or Tom Waits",
-  "Komo drinks a nutty russian for first shift drink",
   "Having to call the cops",
-  "Someone smokes weed on the patio not knowing its not allowed",
+  "Riegna gets in a fight",
+  "Someone throws up",
+  "Plugged toilet plunged by a non employee",
+  "Nonregular finds notes in the owls ass",
+  "Scottie shows her rib tattoo",
+  "Someone melts their shoe on one of the fires",
+  "Wingman shows up and hands out a business card",
+  "Devon has phone service",
+  "5 or more people come in wearing formal wear",
+  "Comical amount of skiing supplies on the floor",
+  "Shane and Laura show up at the same time",
+  "Kristy comes in",
+  "Two people trade clothes or accessories",
+  "Someone plays instrument on patio when not everyone is digging it",
+  "Animal transported not on a normal leash",
+];
+
+// ── TIER 2 — OCCASIONAL (happens a few times a week) ─────────────────────────
+const OCCASIONAL = [
+  "Someone falls off a barstool",
+  "Someone ugly crying",
+  "A non family member at family table",
+  "Komo drinks a nutty russian for first shift drink",
   "Riegna says she wants to leave before cooking anything",
-  "Regular here on a non regular day",
   "Mel has more than one drink",
-  "Regular comes back to the bar for a second time after leaving",
   "Trash panda digs through garbage for a cigarette butt",
-  "Nonregular thinks they have more pull than they do",
   "A non accidental glass break",
   "A regular gets cut off noticeably",
-  "Plugged toilet plunged by a non employee",
   "Bartender gives a free drink for doing a task",
-  "Someone comes by selling flowers",
   "Unintentional buttcrack 3+ inches with visible cheek",
-  "Someone plays instrument on patio when not everyone is digging it",
   "Someone sits in a wet chair",
-  "Someone bums more than 3 cigs with no money",
-  "Lunch shots",
-"Someone talks about a difficult customer",
-"someone asks another person to watxh their stuff",
-"someone stops someone from talking to sing along to a song",
-  "Someone is on a first date",
   "Someone is on an e-date (Tinder, Bumble, etc.)",
-  "Asked for a device and its on the communal charging block",
   "Someone asks Sasha about her weird colored drink",
-  "Someone says they have to go move their car or pay for parking",
-  "At least 3 dogs in the bar at one time",
-  "Someone says Hey, I didn't know you were working today",
   "Someone accidentally breaks a glass and tries to clean it up",
-  "Nonregular finds notes in the owls ass",
   "All three picnic tables filled at one time",
-  "Gabs not wearing any red",
-  "Someone orders a titos and vodka",
-  "Someone starts talking politics or religion",
+  "Gabs not wearing any red clothing",
   "Scottie comes in wearing no leather",
   "Someone asks Scottie how they are and doesnt get all ten fingers all ten toes",
-  "A regular drags a chair and people cringe",
-  "Asks for a cig then asks if its a menthol",
-  "Kristy comes in",
   "All Star plays naturally",
-  "Someone asks if we are streaming a paid event",
   "Someone complains about how the draft beer tastes",
-  "An expensive item is left on the table by its owner",
   "An audience participation song comes on",
-  "Michele stays more than an hour after her shift",
-  "Jon talks about time in prison",
+  "Michelle stays more than an hour after her shift",
   "Someone mentions the previous Dehn iteration",
   "A bar mentioned that doesnt exist in Salem anymore",
-  "Watering the plants gets mentioned",
-  "A bartender called out for leaving with something important",
   "Animal left in a car by someone inside the bar",
   "Rando tries to park in the bartender spot",
-  "Animal transported not on a normal leash",
-  "5 or more people come in wearing formal wear",
   "Having to unhook the chairs around the fire",
-  "Comical amount of skiing supplies on the floor",
-  "Someone asks if we have pool",
   "Fire isnt lit 2 hours past sunset",
-  "Shane and Laura show up at the same time",
-  "You hear someone say youve never seen X movie",
   "Non-employee asks to go in the office",
-  "A person asks for the music to be turned up",
   "Big Bang Theory, Ridiculousness or sports on the office TV",
   "More than three pigeons on the back patio",
   "An entire purse or backpack emptied on a table",
-  "William Tipton shows up",
   "Unknown birthday announced by birthday person",
   "Someone orders bar food when Riegna is working",
-  "Obligatory partner shot",
-  "Scottie shows her rib tattoo",
-  "Someone melts their shoe on one of the fires",
-  "Someone says be fun have safe",
-  "3 or more people go for party favors or a safety meeting",
-  "Wingman shows up and hands out a business card",
-  "Someone asks to use or share Touchtunes credits",
+  "3 or more people go for party favors",
   "3 or more people leaving to do karaoke",
   "When Leah laughs and snorts",
   "When someone sits in chair graveyard",
-  "When a bartender asks someone to go get them food",
   "A person tries to park their bike awkwardly on the patio",
-  "2 or more chairs moved by one party",
-  "Two people trade clothes or accessories",
   "Getting a jello shot from someone you dont know",
-  "Devon has phone service",
-  "3 or more people woo at one time",
   "Someone plays a song to annoy someone else",
+  "You find something weird in the fire pit",
+  "A regular brings leftovers from their job",
+  "You hear someone say youve never seen BLANK movie",
+  "3 or more people woo at one time",
+];
+
+// ── TIER 3 — COMMON (happens most nights) ────────────────────────────────────
+const COMMON = [
+  "Hash plays Marty Robbins or Tom Waits",
+  "Someone smokes weed on the patio not knowing its not allowed",
+  "Regular here on a non regular day",
+  "Regular comes back to the bar for a second time after leaving",
+  "Nonregular thinks they have more pull than they do",
+  "Someone bums more than 3 cigs with no money",
+  "Lunch shots",
+  "Someone is on a first date",
+  "Asked for a device and its on the communal charging block",
+  "Someone says they have to go move their car or pay for parking",
+  "At least 3 dogs in the bar at one time",
+  "Someone orders a titos and vodka",
+  "Someone starts talking politics or religion",
+  "A regular drags a chair and people cringe",
+  "Someone asks for a cig then asks if its a menthol",
+  "Someone asks if we are streaming a paid event",
+  "An expensive item is left on the table by its owner",
+  "Watering the plants gets mentioned",
+  "A bartender called out for leaving with something important",
+  "Someone asks if we have pool",
+  "A person asks for the music to be turned up",
+  "Obligatory partner shot",
+  "Someone says be fun have safe",
+  "Someone asks to use or share Touchtunes credits",
+  "When a bartender asks someone to go get them food",
+  "2 or more chairs moved by one party",
   "You cant sit here, a regular is coming back",
   "Bartender forgets about someones food order",
-  "You find something weird in the fire pit",
   "Holman guests come in for one drink and leave right away",
-  "A regular brings leftovers from their job",
   "Ariel is not playing a game",
-  "Dev doesnt have his tech deck with him"
+  "Dev doesnt have his tech deck with him",
 ];
+
+// ── PICK FUNCTION ─────────────────────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickFromTier(arr, count) {
+  return shuffle(arr).slice(0, Math.min(count, arr.length));
+}
+
+function weightedPick(n) {
+  const nRare       = Math.round(n * TIER_PCT.rare);
+  const nOccasional = Math.round(n * TIER_PCT.occasional);
+  const nCommon     = n - nRare - nOccasional;
+
+  const picked = [
+    ...pickFromTier(RARE,       nRare),
+    ...pickFromTier(OCCASIONAL, nOccasional),
+    ...pickFromTier(COMMON,     nCommon),
+  ];
+
+  // If rounding left us short, top up from whichever tier has leftovers
+  // (shouldn't normally happen but keeps card full)
+  if (picked.length < n) {
+    const used = new Set(picked);
+    const all = shuffle([...RARE, ...OCCASIONAL, ...COMMON]);
+    for (const item of all) {
+      if (!used.has(item)) { picked.push(item); used.add(item); }
+      if (picked.length === n) break;
+    }
+  }
+
+  return shuffle(picked); // final shuffle so tiers are mixed on the card
+}
 
 function shuffle(arr) {
   const a = [...arr];
@@ -437,7 +488,7 @@ window.addEventListener('beforeunload', function(e) {
 
 function newCard() {
   window._cardDirty = false;
-  const items = shuffle(ITEMS).slice(0, 24);
+  const items = weightedPick(24);
   const letters = ['B','I','N','G','O'];
   const card = document.getElementById('bingoCard');
   card.style.animation = 'none';
