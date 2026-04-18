@@ -292,6 +292,147 @@
   }
 
   footer a:hover { color: var(--accent); }
+
+  /* ── PANIC MODAL ── */
+  .panic-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,14,13,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .panic-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .panic-modal {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 40px 36px 36px;
+    width: 90%;
+    max-width: 460px;
+    transform: scale(0.88) translateY(16px);
+    transition: transform 0.25s ease;
+    position: relative;
+  }
+
+  .panic-overlay.show .panic-modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .panic-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .panic-sub {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stamp);
+    margin-bottom: 24px;
+    border-bottom: 1.5px solid var(--stamp);
+    padding-bottom: 14px;
+  }
+
+  .panic-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .panic-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stamp);
+  }
+
+  .panic-input,
+  .panic-textarea {
+    background: white;
+    border: 1.5px solid var(--stamp);
+    padding: 10px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+
+  .panic-input:focus,
+  .panic-textarea:focus {
+    border-color: var(--ink);
+  }
+
+  .panic-textarea {
+    min-height: 110px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  .panic-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn-panic-send {
+    flex: 1;
+    padding: 13px;
+    background: var(--accent);
+    color: white;
+    border: 2px solid var(--ink);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--ink);
+    transition: all 0.1s;
+  }
+
+  .btn-panic-send:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn-panic-send:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+
+  .btn-panic-cancel {
+    padding: 13px 20px;
+    background: white;
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--ink);
+    transition: all 0.1s;
+  }
+
+  .btn-panic-cancel:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn-panic-cancel:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+
+  .panic-sent {
+    text-align: center;
+    padding: 16px 0 8px;
+    display: none;
+  }
+
+  .panic-sent .big { font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: var(--accent2); }
+  .panic-sent p { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--stamp); margin-top: 8px; }
+
 </style>
 </head>
 <body>
@@ -306,7 +447,7 @@
 <div class="card-actions">
   <button class="btn-action new-card" onclick="newCard()">NEW CARD</button>
   <button class="btn-action" onclick="clearMarks()">CLEAR MARKS</button>
-  <button class="btn-action print" onclick="window.print()">PRINT</button>
+  <button class="btn-action print" onclick="openPanic()">PANIC</button>
 </div>
 
 <script>
@@ -325,6 +466,7 @@ const RARE = [
   "Riegna throws an ashtray",
   "Scottie bites their date before the date bites her",
   "Having to call the cops",
+  "Pure Decadence brings 1 box instead of 2",
   "Riegna gets in a fight",
   "Someone throws up",
   "Plugged toilet plunged by a non employee",
@@ -333,10 +475,11 @@ const RARE = [
   "Someone melts their shoe on one of the fires",
   "Wingman shows up and hands out a business card",
   "Devon has phone service",
+  "Curtis and Abby relationship status changes",
   "5 or more people come in wearing formal wear",
   "Comical amount of skiing supplies on the floor",
   "Shane and Laura show up at the same time",
-  "Kristy comes in",
+  "Christie comes in",
   "Two people trade clothes or accessories",
   "Someone plays instrument on patio when not everyone is digging it",
   "Animal transported not on a normal leash",
@@ -360,7 +503,7 @@ const OCCASIONAL = [
   "Someone asks Sasha about her weird colored drink",
   "Someone accidentally breaks a glass and tries to clean it up",
   "All three picnic tables filled at one time",
-  "Gabs not wearing any red clothing",
+  "Gabs not wearing any red",
   "Scottie comes in wearing no leather",
   "Someone asks Scottie how they are and doesnt get all ten fingers all ten toes",
   "All Star plays naturally",
@@ -388,7 +531,7 @@ const OCCASIONAL = [
   "Someone plays a song to annoy someone else",
   "You find something weird in the fire pit",
   "A regular brings leftovers from their job",
-  "You hear someone say youve never seen BLANK movie",
+  "You hear someone say youve never seen X movie",
   "3 or more people woo at one time",
 ];
 
@@ -408,7 +551,7 @@ const COMMON = [
   "Someone orders a titos and vodka",
   "Someone starts talking politics or religion",
   "A regular drags a chair and people cringe",
-  "Someone asks for a cig then asks if its a menthol",
+  "Asks for a cig then asks if its a menthol",
   "Someone asks if we are streaming a paid event",
   "An expensive item is left on the table by its owner",
   "Watering the plants gets mentioned",
@@ -535,6 +678,43 @@ function clearMarks() {
 }
 
 newCard();
+
+function openPanic() {
+  document.getElementById('panicForm').style.display = 'block';
+  document.getElementById('panicSent').style.display = 'none';
+  document.getElementById('panicName').value = '';
+  document.getElementById('panicSubject').value = '';
+  document.getElementById('panicMessage').value = '';
+  document.getElementById('panicOverlay').classList.add('show');
+}
+
+function closePanic() {
+  document.getElementById('panicOverlay').classList.remove('show');
+}
+
+function sendPanic() {
+  const name    = document.getElementById('panicName').value.trim();
+  const subject = document.getElementById('panicSubject').value.trim() || 'Bingo Feedback';
+  const message = document.getElementById('panicMessage').value.trim();
+
+  if (!message) {
+    document.getElementById('panicMessage').focus();
+    return;
+  }
+
+  const body = encodeURIComponent(
+    (name ? 'From: ' + name + '\n\n' : '') + message
+  );
+  const sub = encodeURIComponent('[Blackout at the Dehn] ' + subject);
+
+  window.location.href = 'mailto:Outerspacecrabs@gmail.com?subject=' + sub + '&body=' + body;
+
+  setTimeout(() => {
+    document.getElementById('panicForm').style.display = 'none';
+    document.getElementById('panicSent').style.display = 'block';
+  }, 400);
+}
+
 </script>
 
 <div class="modal-overlay" id="modalOverlay">
@@ -552,5 +732,40 @@ newCard();
 <footer>
   Game designed by GrapeBiscuits &nbsp;<a href="secret.html">&copy;</a> 2026
 </footer>
+
+<div class="panic-overlay" id="panicOverlay">
+  <div class="panic-modal">
+    <div class="panic-title">PANIC</div>
+    <div class="panic-sub">Send a suggestion or change request</div>
+
+    <div id="panicForm">
+      <div class="panic-field">
+        <label class="panic-label">Your name (optional)</label>
+        <input class="panic-input" id="panicName" type="text" placeholder="Who's asking...">
+      </div>
+      <div class="panic-field">
+        <label class="panic-label">Subject</label>
+        <input class="panic-input" id="panicSubject" type="text" placeholder="Add a square, fix something...">
+      </div>
+      <div class="panic-field">
+        <label class="panic-label">Message</label>
+        <textarea class="panic-textarea" id="panicMessage" placeholder="Tell us what you want changed or added..."></textarea>
+      </div>
+      <div class="panic-actions">
+        <button class="btn-panic-cancel" onclick="closePanic()">CANCEL</button>
+        <button class="btn-panic-send" onclick="sendPanic()">SEND IT</button>
+      </div>
+    </div>
+
+    <div class="panic-sent" id="panicSent">
+      <div class="big">SENT!</div>
+      <p>Message on its way to GrapeBiscuits</p>
+      <div style="margin-top:24px;">
+        <button class="btn-panic-cancel" onclick="closePanic()">CLOSE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
